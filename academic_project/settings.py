@@ -76,9 +76,9 @@ WSGI_APPLICATION = 'academic_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'examcase',
+        'NAME': 'final',
         'USER': 'postgres',  # Sesuaikan dengan username PostgreSQL kamu
-        'PASSWORD': 'abellasql',  # Sesuaikan dengan password PostgreSQL kamu
+        'PASSWORD': '12345678',  # Sesuaikan dengan password PostgreSQL kamu
         'HOST': 'localhost',
         'PORT': '5432',
     }
