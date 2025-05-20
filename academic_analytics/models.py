@@ -113,3 +113,17 @@ class CourseInstructor(models.Model):
 
     def __str__(self):
         return f"{self.course.course_name} - {self.instructor.instructor_name}"
+    
+class CourseSemester(models.Model):
+    id = models.AutoField(primary_key=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, db_column='course_id')
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, db_column='semester_id')
+
+    class Meta:
+        db_table = 'academic_analytics_coursesemester'
+        constraints = [
+            models.UniqueConstraint(fields=['course', 'semester'], name='unique_course_semester')
+        ]
+
+    def __str__(self):
+        return f"{self.course.course_name} - {self.semester.semester_name}"
