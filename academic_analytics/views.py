@@ -276,3 +276,72 @@ def predict_best_instructor(student, course, learning_style):
         'reason': reason,
         'confidence': 78  # Confidence tetap untuk simulasi
     }
+
+def predict_grade(student, course, attendance, midterm_score, project_score):
+    # Dapatkan data untuk training
+    enrollments = Enrollment.objects.all()
+    data = []
+    
+    for enrollment in enrollments:
+        # Dapatkan nilai ujian jika ada
+        midterm = Assessment.objects.filter(enroll=enrollment, assessment_type='Midterm').first()
+        final = Assessment.objects.filter(enroll=enrollment, assessment_type='Final').first()
+        project = Assessment.objects.filter(enroll=enrollment, assessment_type='Project').first()
+        
+        # Dapatkan kehadiran jika ada
+        attend = Attendance.objects.filter(enroll=enrollment).first()
+        
+        # Hanya tambahkan jika semua data tersedia dan nilai akhir (grade) tidak null
+        if midterm and final and project and attend and enrollment.grade is not None:
+            data.append({
+                'midterm_score': midterm.score,
+                'final_score': final.score,
+                'project_score': project.score,
+                'attendance': attend.attendance_percentage,
+                'grade': enrollment.grade
+            })
+    
+    # Jika tidak ada data yang cukup
+    if len(data) < 10:
+        return {
+            'predicted_grade': 'Not enough data for prediction',
+            'confidence': 0
+        }
+    
+    # Convert ke DataFrame
+    df = pd.DataFrame(data)
+    
+    # Pisahkan fitur dan target
+    X = df[['midterm_score', 'project_score', 'attendance']]
+    y = df['grade']
+    
+    # Train test split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
+    # Standardisasi fitur
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    
+    # Buat dan latih model
+    model = RandomForestRegressor(n_estimators=100, random_state=42)
+    model.fit(X_train_scaled, y_train)
+    
+    # Input untuk prediksi
+    input_data = np.array([[midterm_score, project_score, attendance]])
+    input_data_scaled = scaler.transform(input_data)
+    
+    # Prediksi
+    predicted_grade = model.predict(input_data_scaled)[0]
+    
+    # Hitung confidence (bisa menggunakan std dev dari prediksi ensemble)
+    predictions = []
+    for estimator in model.estimators_:
+        predictions.append(estimator.predict(input_data_scaled)[0])
+    
+    confidence = 1 - (np.std(predictions) / 100)  # Penskalaan sederhana
+    
+    return {
+        'predicted_grade': round(predicted_grade, 2),
+        'confidence': round(confidence * 100, 2)
+    }
+
