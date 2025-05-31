@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-8e9#=8dlsw3i2q&zfj4a52jwl@u#2u1)p8d#9ba-z#%*qiu%jj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -80,7 +81,7 @@ DATABASES = {
         'USER': 'postgres',  # Sesuaikan dengan username PostgreSQL kamu
         'PASSWORD': '12345678',  # Sesuaikan dengan password PostgreSQL kamu
         'HOST': 'localhost',
-        'PORT': '5432',
+        'PORT': '5051',
     }
 }
 
@@ -119,10 +120,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "academic_analytics/static",
-]
+STATIC_URL = '/static/'
+
+#STATICFILES_DIRS = []
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
